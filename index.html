@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Form - Computer Studies</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Trajan+Pro&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(120deg, #6b21a8 0%, #9333ea 100%);
+      font-family: 'Trajan Pro', serif;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-white">
+  <div class="max-w-5xl mx-auto bg-white/10 backdrop-blur-sm p-10 mt-12 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-white/20">
+    <div class="flex justify-center mb-6">
+      <img src="https://www.addu.edu.ph/wp-content/uploads/2020/08/UniversitySeal240px.png" alt="Ateneo de Davao Logo" class="w-20 h-20">
+    </div>
+    <h1 class="text-4xl font-extrabold mb-8 text-center text-white tracking-wide">Add Student</h1>
+    <form id="studentForm" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <input type="text" id="firstName" placeholder="First Name" class="border border-purple-300 bg-white text-purple-900 p-3 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500">
+        <input type="text" id="lastName" placeholder="Last Name" class="border border-purple-300 bg-white text-purple-900 p-3 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500">
+        <input type="date" id="birthdate" class="border border-purple-300 bg-white text-purple-900 p-3 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500">
+      </div>
+
+      <div class="flex flex-wrap items-center gap-6 mt-4">
+        <span class="text-lg font-medium">Gender:</span>
+        <label class="inline-flex items-center gap-2">
+          <input type="radio" name="gender" value="Male" class="text-purple-600" checked>
+          <span>Male</span>
+        </label>
+        <label class="inline-flex items-center gap-2">
+          <input type="radio" name="gender" value="Female" class="text-purple-600">
+          <span>Female</span>
+        </label>
+      </div>
+
+      <div>
+        <select id="course" class="border border-purple-300 bg-white text-purple-900 p-3 rounded-xl shadow-sm w-full focus:ring-2 focus:ring-purple-500">
+          <option value="BS Computer Science">BS Computer Science</option>
+          <option value="BS Data Science">BS Data Science</option>
+          <option value="BS Information Systems">BS Information Systems</option>
+          <option value="BS Information Technology">BS Information Technology</option>
+        </select>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <input type="checkbox" id="consent" class="mt-1">
+        <label for="consent">I consent that my information can be used for archiving of student record.</label>
+      </div>
+
+      <div class="flex gap-4 justify-end">
+        <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-full shadow-lg transition-all">Add</button>
+        <button type="reset" id="resetBtn" class="bg-white hover:bg-purple-100 text-purple-800 px-6 py-3 rounded-full shadow-lg transition-all">Reset</button>
+      </div>
+    </form>
+
+    <div class="mt-12">
+      <input type="text" id="searchInput" placeholder="Search by Full Name" class="border border-purple-300 bg-white text-purple-900 p-3 rounded-xl shadow-sm w-full mb-6 focus:ring-2 focus:ring-purple-500">
+
+      <div class="overflow-x-auto rounded-xl shadow-lg">
+        <table class="w-full text-left border-collapse text-white">
+          <thead class="bg-purple-800 text-white">
+            <tr>
+              <th class="px-5 py-3 border-b border-purple-700">Full Name</th>
+              <th class="px-5 py-3 border-b border-purple-700">Birthdate</th>
+              <th class="px-5 py-3 border-b border-purple-700">Age</th>
+              <th class="px-5 py-3 border-b border-purple-700">Gender</th>
+              <th class="px-5 py-3 border-b border-purple-700">Course</th>
+            </tr>
+          </thead>
+          <tbody id="studentTable" class="bg-purple-600/30">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('studentForm');
+    const tableBody = document.getElementById('studentTable');
+    const searchInput = document.getElementById('searchInput');
+
+    const formatDate = (dateStr) => {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateStr).toLocaleDateString(undefined, options);
+    };
+
+    const calculateAge = (birthdate) => {
+      const birth = new Date(birthdate);
+      const today = new Date();
+      let age = today.getFullYear() - birth.getFullYear();
+      const m = today.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+      return age;
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const birthdate = document.getElementById('birthdate').value;
+      const gender = document.querySelector('input[name="gender"]:checked')?.value;
+      const course = document.getElementById('course').value;
+      const consent = document.getElementById('consent').checked;
+
+      if (!firstName || !lastName || !birthdate || !gender || !course) {
+        alert('Please complete the form.');
+        return;
+      }
+
+      if (!consent) {
+        alert('Please consent before proceeding.');
+        return;
+      }
+
+      const fullName = `${firstName} ${lastName}`;
+      const age = calculateAge(birthdate);
+
+      const row = `<tr class="hover:bg-purple-700/50 transition-all">
+        <td class="px-5 py-3 border-b border-purple-700">${fullName}</td>
+        <td class="px-5 py-3 border-b border-purple-700">${formatDate(birthdate)}</td>
+        <td class="px-5 py-3 border-b border-purple-700">${age}</td>
+        <td class="px-5 py-3 border-b border-purple-700">${gender}</td>
+        <td class="px-5 py-3 border-b border-purple-700">${course}</td>
+      </tr>`;
+
+      tableBody.insertAdjacentHTML('beforeend', row);
+      form.reset();
+    });
+
+    searchInput.addEventListener('input', () => {
+      const filter = searchInput.value.toLowerCase();
+      const rows = tableBody.getElementsByTagName('tr');
+      Array.from(rows).forEach(row => {
+        const fullNameCell = row.cells[0];
+        if (fullNameCell) {
+          const fullNameText = fullNameCell.textContent.toLowerCase();
+          row.style.display = fullNameText.includes(filter) ? '' : 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
